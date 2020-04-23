@@ -254,6 +254,9 @@ pub(crate) struct FatPtr<T> {
 #[stable(feature = "slice_from_raw_parts", since = "1.42.0")]
 #[rustc_const_unstable(feature = "const_slice_from_raw_parts", issue = "67456")]
 pub const fn slice_from_raw_parts<T>(data: *const T, len: usize) -> *const [T] {
+    // SAFETY: Creating the Repr is safe, but using it is unsafe, hence the
+    // `unsafe` block. Using the return value can lead to undefined behavior
+    // as explained in the documentation for [`from_raw_parts`]
     unsafe { Repr { raw: FatPtr { data, len } }.rust }
 }
 
@@ -271,6 +274,11 @@ pub const fn slice_from_raw_parts<T>(data: *const T, len: usize) -> *const [T] {
 #[stable(feature = "slice_from_raw_parts", since = "1.42.0")]
 #[rustc_const_unstable(feature = "const_slice_from_raw_parts", issue = "67456")]
 pub const fn slice_from_raw_parts_mut<T>(data: *mut T, len: usize) -> *mut [T] {
+    // SAFETY: Creating the Repr is safe, but using it is unsafe, hence the
+    // `unsafe` block. Using the return value can lead to undefined behavior
+    // as explained in the documentation for [`from_raw_parts_mut`]. The only
+    // difference between the safety of [`slice_from_raw_parts`] and
+    // [`slice_from_raw_parts_mut`]
     unsafe { Repr { raw: FatPtr { data, len } }.rust_mut }
 }
 
