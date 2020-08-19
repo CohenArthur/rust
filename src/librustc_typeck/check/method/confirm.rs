@@ -1,6 +1,6 @@
 use super::{probe, MethodCallee};
 
-use crate::astconv::AstConv;
+use crate::astconv::{AstConv, AstConvGeneric};
 use crate::check::{callee, FnCtxt};
 use crate::hir::def_id::DefId;
 use crate::hir::GenericArg;
@@ -298,7 +298,7 @@ impl<'a, 'tcx> ConfirmContext<'a, 'tcx> {
         // If they were not explicitly supplied, just construct fresh
         // variables.
         let generics = self.tcx.generics_of(pick.item.def_id);
-        let arg_count_correct = AstConv::check_generic_arg_count_for_call(
+        let arg_count_correct = AstConvGeneric::check_generic_arg_count_for_call(
             self.tcx, self.span, &generics, &seg, true, // `is_method_call`
         );
 
@@ -306,7 +306,7 @@ impl<'a, 'tcx> ConfirmContext<'a, 'tcx> {
         // parameters from the type and those from the method.
         assert_eq!(generics.parent_count, parent_substs.len());
 
-        AstConv::create_substs_for_generic_args(
+        AstConvGeneric::create_substs_for_generic_args(
             self.tcx,
             pick.item.def_id,
             parent_substs,

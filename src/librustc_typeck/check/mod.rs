@@ -86,7 +86,8 @@ mod wfcheck;
 pub mod writeback;
 
 use crate::astconv::{
-    AstConv, ExplicitLateBound, GenericArgCountMismatch, GenericArgCountResult, PathSeg,
+    AstConv, AstConvGeneric, ExplicitLateBound, GenericArgCountMismatch, GenericArgCountResult,
+    PathSeg,
 };
 use rustc_ast as ast;
 use rustc_ast::util::parser::ExprPrecedence;
@@ -5667,7 +5668,7 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {
             if let GenericArgCountResult {
                 correct: Err(GenericArgCountMismatch { reported: Some(ErrorReported), .. }),
                 ..
-            } = AstConv::check_generic_arg_count_for_call(
+            } = AstConvGeneric::check_generic_arg_count_for_call(
                 tcx, span, &generics, &seg, false, // `is_method_call`
             ) {
                 infer_args_for_err.insert(index);
@@ -5735,7 +5736,7 @@ impl<'a, 'tcx> FnCtxt<'a, 'tcx> {
         };
 
         let substs = self_ctor_substs.unwrap_or_else(|| {
-            AstConv::create_substs_for_generic_args(
+            AstConvGeneric::create_substs_for_generic_args(
                 tcx,
                 def_id,
                 &[][..],
